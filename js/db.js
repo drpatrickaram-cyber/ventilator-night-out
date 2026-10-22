@@ -33,6 +33,27 @@ async function measureOffset(a) {
   return Math.round(best.off);
 }
 
+// ---------------------------------------------------------------- connection health
+let offlineCount = 0;
+function setOffline(delta) {
+  offlineCount = Math.max(0, offlineCount + delta);
+  window.dispatchEvent(new CustomEvent("vno-conn", { detail: { online: offlineCount === 0 } }));
+}
+function resilient(listen, fetchServer, cb) {
+  let last = "", timer = null, offline = false, stopped = false;
+  const deliver = (data) => { const j = JSON.stringify(data); if (j !== last) { last = j; cb(data); } };
+  const poll = async () => { try { deliver(await fetchServer()); } catch (e) { /* still offline */ } };
+  const mark = (fromCache) => {
+    if (fromCache && !offline) { offline = true; setOffline(1); timer = setInterval(poll, 2500); }
+    if (!fromCache && offline) { offline = false; setOffline(-1); clearInterval(timer); timer = null; }
+  };
+  const unsub = listen(deliver, mark);
+  const wake = () => { if (!stopped && document.visibilityState === "visible") poll(); };
+  document.addEventListener("visibilitychange", wake);
+  window.addEventListener("online", wake);
+  return () => { stopped = true; unsub(); clearInterval(timer); if (offline) setOffline(-1); document.removeEventListener("visibilitychange", wake); window.removeEventListener("online", wake); };
+}
+
 // ---------------------------------------------------------------- Firebase
 async function firebaseBackend() {
   const F = await import("./vendor/firebase.js");
@@ -79,8 +100,14 @@ async function firebaseBackend() {
     update: (p, patch) => F.updateDoc(ref(p), enc(patch)),
     create: (p, d) => F.setDoc(ref(p), enc(d)),
     remove: (p) => F.deleteDoc(ref(p)),
-    onDoc: (p, cb, err) => F.onSnapshot(ref(p), (s) => cb(snapData(s)), err || ((e) => console.error(p, e))),
-    onColl: (p, o, cb, err) => F.onSnapshot(buildQuery(p, o), (qs) => cb(qs.docs.map((d) => ({ id: d.id, ...snapData(d) }))), err || ((e) => console.error(p, e))),
+    // Listeners heal themselves: if the realtime stream drops (snapshot served from cache),
+    // poll the server every 2.5 s until the stream is live again, so screens never freeze.
+    onDoc: (p, cb, err) => resilient(
+      (deliver, mark) => F.onSnapshot(ref(p), { includeMetadataChanges: true }, (s) => { mark(s.metadata.fromCache); deliver(snapData(s)); }, err || ((e) => console.error(p, e))),
+      async () => snapData(await F.getDocFromServer(ref(p))), cb),
+    onColl: (p, o, cb, err) => resilient(
+      (deliver, mark) => F.onSnapshot(buildQuery(p, o), { includeMetadataChanges: true }, (qs) => { mark(qs.metadata.fromCache); deliver(qs.docs.map((d) => ({ id: d.id, ...snapData(d) }))); }, err || ((e) => console.error(p, e))),
+      async () => (await F.getDocsFromServer(buildQuery(p, o))).docs.map((d) => ({ id: d.id, ...snapData(d) })), cb),
     async tx(p, fn) {
       return F.runTransaction(fs, async (t) => {
         const s = await t.get(ref(p));

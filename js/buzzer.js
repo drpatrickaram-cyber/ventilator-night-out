@@ -9,10 +9,15 @@ if (!TEAM_KEYS.includes(team)) team = null;
 
 async function press(e) {
   e.preventDefault();
+  const pressedAt = db.now(); // capture the moment of the tap before any network call
   snd.unlock();
-  const g = game;
-  if (!g || !g.buzzOpen || g.buzzWinner || pressedRound === g.round) return;
-  const pressedAt = db.now();
+  let g = game;
+  if (!g || !g.buzzOpen) {
+    // local view may be stale (dropped connection): double-check with the server
+    const fresh = await db.get("state/game").catch(() => null);
+    if (fresh) { game = fresh; g = fresh; }
+  }
+  if (!g || !g.buzzOpen || g.buzzWinner || pressedRound === g.round) { render(); return; }
   pressedRound = g.round;
   navigator.vibrate?.(60);
   render();

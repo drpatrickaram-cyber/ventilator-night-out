@@ -36,6 +36,15 @@ export const $ = (s, r = document) => r.querySelector(s);
 export function mount(root, ...kids) { root.replaceChildren(...kids.flat(Infinity).filter(Boolean)); }
 export function esc(s) { return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
+// small badge shown while the realtime connection is recovering
+window.addEventListener("vno-conn", (e) => {
+  let b = document.getElementById("conn-badge");
+  if (!b) { b = h("div", { id: "conn-badge", role: "status" }, "กำลังเชื่อมต่อใหม่…"); document.body.appendChild(b); }
+  clearTimeout(b._t);
+  if (e.detail.online) b.style.display = "none";
+  else b._t = setTimeout(() => { b.style.display = "block"; }, 3000); // ignore the brief cache-first snapshot on load
+});
+
 export function toast(msg, kind = "") {
   let box = $("#toasts");
   if (!box) { box = h("div", { id: "toasts" }); document.body.appendChild(box); }
