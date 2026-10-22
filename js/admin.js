@@ -32,7 +32,15 @@ function gameCard() {
           for (let i = 0; i < rows.length; i += 400) await db.batch(rows.slice(i, i + 400).map((r) => ({ op: "delete", path: `${c}/${r.id}` })));
         }
         toast("ล้างแล้ว", "good");
-      })),
+      }),
+      btn("ล้างข้อมูลทดสอบทั้งหมด", async () => {
+        if (!confirm("ลบผู้ชม คำตอบ การกด และสมาชิกที่สมัครทั้งหมด? (ใช้ก่อนวันงานจริงเท่านั้น)")) return;
+        for (const c of ["answers", "buzz", "players", "wall", "members"]) {
+          const rows = await db.list(c, {});
+          for (let i = 0; i < rows.length; i += 400) await db.batch(rows.slice(i, i + 400).map((r) => ({ op: "delete", path: `${c}/${r.id}` })));
+        }
+        toast("ล้างข้อมูลทดสอบแล้ว", "good");
+      }, "bad")),
     game ? h("div", { class: "muted", style: { fontSize: "13px" } }, `สถานะ: ${game.phase} · ผู้ชมลงชื่อ ${counts.players} คน`) : h("div", { class: "muted" }, "ยังไม่มีเกม — ตั้งชื่อทีมแล้วกด ‘เริ่มเกมใหม่’"));
 }
 
