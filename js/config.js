@@ -1,10 +1,9 @@
-// Firebase web config — replace with the values from Firebase console
-// (Project settings → Your apps → Web app). These values are public by design.
+// Firebase web config (public by design — access is controlled by firestore.rules)
 export const FIREBASE_CONFIG = {
-  apiKey: "REPLACE_ME",
-  authDomain: "REPLACE_ME.firebaseapp.com",
-  projectId: "REPLACE_ME",
-  storageBucket: "REPLACE_ME.appspot.com",
-  messagingSenderId: "REPLACE_ME",
-  appId: "REPLACE_ME",
+  apiKey: "AIzaSyC1OrP_bd7d3Pxgk3AKVl26dGdSjpheCf4",
+  authDomain: "ventilator-night-out.firebaseapp.com",
+  projectId: "ventilator-night-out",
+  storageBucket: "ventilator-night-out.firebasestorage.app",
+  messagingSenderId: "438348358197",
+  appId: "1:438348358197:web:ea2a2e60a6bf340ba6877c",
 };
