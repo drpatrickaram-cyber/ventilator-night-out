@@ -1,0 +1,218 @@
+[
+ {
+  "id": "WF10",
+  "aType": "open",
+  "prompt": "Flow–time waveform: expiratory flow ไม่กลับถึงศูนย์ก่อนเริ่ม breath ถัดไป บ่งชี้ภาวะอะไร?",
+  "answer": "Auto-PEEP (intrinsic PEEP / dynamic hyperinflation)",
+  "criteria": "บอก auto-PEEP หรือ dynamic hyperinflation",
+  "accepted": "auto-PEEP, autoPEEP, intrinsic PEEP, PEEPi, dynamic hyperinflation, air trapping, ลมค้าง",
+  "reveal": "Expiratory flow ไม่กลับถึงศูนย์ = มีลมค้าง (auto-PEEP)",
+  "pearl": "ลด minute ventilation (โดยเฉพาะ RR) ได้ผลมากที่สุด",
+  "options": [
+   "",
+   "",
+   "",
+   ""
+  ],
+  "correct": "",
+  "aPrompt": ""
+ },
+ {
+  "id": "WF20",
+  "aType": "mcq",
+  "prompt": "Volume control: pressure–time waveform มีรอยบุ๋ม (scooping) ช่วง inspiration บ่งชี้อะไร?",
+  "options": [
+   "Flow starvation",
+   "Auto-PEEP",
+   "Circuit leak",
+   "Double triggering"
+  ],
+  "correct": "A",
+  "answer": "Flow starvation — เพิ่ม inspiratory flow หรือเปลี่ยนเป็น pressure mode",
+  "criteria": "บอก flow starvation / flow ไม่พอ",
+  "reveal": "รอยบุ๋มช่วง inspiration = ผู้ป่วยต้องการ flow มากกว่าที่ตั้ง",
+  "pearl": "Pressure-targeted mode ให้ flow ตามความต้องการของผู้ป่วย",
+  "accepted": "",
+  "aPrompt": ""
+ },
+ {
+  "id": "WF30",
+  "aType": "open",
+  "prompt": "Waveform แสดง 2 breath ติดกันโดยไม่มีช่วง expiration ระหว่างกัน เรียกว่าอะไร?",
+  "answer": "Double triggering (breath stacking)",
+  "criteria": "บอก double triggering หรือ breath stacking",
+  "accepted": "double triggering, double trigger, double-trigger, breath stacking",
+  "reveal": "2 breath ซ้อนกัน = double triggering",
+  "pearl": "มักเกิดจาก Ti ของเครื่องสั้นกว่า neural Ti",
+  "options": [
+   "",
+   "",
+   "",
+   ""
+  ],
+  "correct": "",
+  "aPrompt": ""
+ },
+ {
+  "id": "WF40",
+  "aType": "mcq",
+  "prompt": "เห็น pressure/flow deflection ช่วง expiration แต่เครื่องไม่ส่ง breath สาเหตุที่พบบ่อยที่สุดคืออะไร?",
+  "options": [
+   "Ineffective triggering จาก auto-PEEP",
+   "Circuit leak",
+   "Trigger sensitivity ไวเกินไป",
+   "Reverse triggering"
+  ],
+  "correct": "A",
+  "answer": "Ineffective effort จาก auto-PEEP",
+  "criteria": "บอก ineffective effort และ auto-PEEP",
+  "reveal": "Ineffective effort ส่วนใหญ่เกิดจาก auto-PEEP",
+  "pearl": "ใน COPD ที่หายใจเอง ตั้ง external PEEP ช่วย trigger ได้",
+  "accepted": "",
+  "aPrompt": ""
+ },
+ {
+  "id": "SD10",
+  "aType": "open",
+  "prompt": "ARDS ชายสูง 170 ซม. (PBW ~66 kg) ตั้ง Vt 700 mL — ค่าที่ผิดคืออะไร?",
+  "answer": "Vt สูงเกิน ควร ~6 mL/kg PBW (~400 mL)",
+  "criteria": "บอกว่า Vt สูงเกิน",
+  "accepted": "Vt สูง, tidal volume สูง, high tidal volume, high Vt, Vt",
+  "reveal": "ARDS: Vt 6 mL/kg PBW ≈ 400 mL",
+  "pearl": "คำนวณจาก PBW ไม่ใช่น้ำหนักจริง",
+  "options": [
+   "",
+   "",
+   "",
+   ""
+  ],
+  "correct": "",
+  "aPrompt": ""
+ },
+ {
+  "id": "SD20",
+  "aType": "mcq",
+  "prompt": "COPD exacerbation ตั้ง RR 30, I:E 1:1 สิ่งที่ควรปรับก่อนคืออะไร?",
+  "options": [
+   "ลด RR / เพิ่ม expiratory time",
+   "เพิ่ม PEEP เป็น 15",
+   "เพิ่ม Vt",
+   "เพิ่ม FiO₂"
+  ],
+  "correct": "A",
+  "answer": "ลด RR เพื่อเพิ่ม expiratory time",
+  "criteria": "บอกลด RR หรือเพิ่ม expiratory time",
+  "reveal": "COPD ต้องการเวลาหายใจออกนาน",
+  "pearl": "ยอมให้ PaCO₂ สูงได้ (permissive hypercapnia)",
+  "accepted": "",
+  "aPrompt": ""
+ },
+ {
+  "id": "SD30",
+  "aType": "open",
+  "prompt": "ตั้ง flow trigger ไวมาก ในผู้ป่วยที่มี circuit leak → เครื่องส่ง breath ถี่โดยผู้ป่วยไม่ได้หายใจ เรียกว่าอะไร?",
+  "answer": "Auto-triggering",
+  "criteria": "บอก auto-triggering",
+  "accepted": "auto-triggering, autotrigger, auto trigger, auto-trigger, autotriggering",
+  "reveal": "Leak + trigger ไวเกิน = auto-triggering",
+  "pearl": "แก้ leak และปรับ trigger ให้ไวน้อยลง",
+  "options": [
+   "",
+   "",
+   "",
+   ""
+  ],
+  "correct": "",
+  "aPrompt": ""
+ },
+ {
+  "id": "SD40",
+  "aType": "mcq",
+  "prompt": "ARDS: PEEP 5, FiO₂ 1.0, SpO₂ 86% — การปรับที่เหมาะที่สุดคืออะไร?",
+  "options": [
+   "เพิ่ม PEEP ตาม PEEP/FiO₂ table",
+   "เพิ่ม Vt เป็น 10 mL/kg",
+   "ลด PEEP เหลือ 0",
+   "เพิ่ม RR"
+  ],
+  "correct": "A",
+  "answer": "เพิ่ม PEEP ตาม PEEP/FiO₂ table",
+  "criteria": "บอกเพิ่ม PEEP",
+  "reveal": "FiO₂ 1.0 แต่ PEEP 5 = PEEP ต่ำเกินไป",
+  "pearl": "ดู driving pressure ควบคู่การปรับ PEEP",
+  "accepted": "",
+  "aPrompt": ""
+ },
+ {
+  "id": "MM10",
+  "aType": "mcq",
+  "prompt": "High pressure alarm ดังทันที + SpO₂ ตก + ผู้ป่วยกัดท่อ สาเหตุคืออะไร?",
+  "options": [
+   "ท่ออุดตัน / ผู้ป่วยกัดท่อ",
+   "Circuit หลุด",
+   "Cuff leak",
+   "Low minute ventilation"
+  ],
+  "correct": "A",
+  "answer": "ET tube obstruction จากการกัดท่อ",
+  "criteria": "บอกท่ออุดตัน/กัดท่อ",
+  "reveal": "High pressure + กัดท่อ = obstruction",
+  "pearl": "ใส่ bite block และประเมิน sedation",
+  "accepted": "",
+  "aPrompt": ""
+ },
+ {
+  "id": "MM20",
+  "aType": "open",
+  "prompt": "EtCO₂ ลดเป็นศูนย์ทันที พร้อม low pressure alarm สิ่งแรกที่ต้องนึกถึงคืออะไร?",
+  "answer": "Circuit disconnection หรือ accidental extubation",
+  "criteria": "บอก disconnection หรือ extubation",
+  "accepted": "disconnection, disconnect, circuit disconnection, ท่อหลุด, circuit หลุด, extubation",
+  "reveal": "EtCO₂ เป็นศูนย์ทันที = ท่อหรือ circuit หลุด",
+  "pearl": "DOPE: Displacement, Obstruction, Pneumothorax, Equipment",
+  "options": [
+   "",
+   "",
+   "",
+   ""
+  ],
+  "correct": "",
+  "aPrompt": ""
+ },
+ {
+  "id": "MM30",
+  "aType": "mcq",
+  "prompt": "Peak pressure สูงขึ้น แต่ plateau pressure ปกติ บ่งชี้อะไร?",
+  "options": [
+   "Airway resistance เพิ่ม",
+   "Compliance ลดลง",
+   "Tension pneumothorax",
+   "Auto-PEEP ลดลง"
+  ],
+  "correct": "A",
+  "answer": "Resistance เพิ่ม เช่น bronchospasm หรือ secretion",
+  "criteria": "บอก resistance เพิ่ม",
+  "reveal": "Peak–plateau gap กว้าง = resistance",
+  "pearl": "Plateau สูงด้วย = ปัญหา compliance",
+  "accepted": "",
+  "aPrompt": ""
+ },
+ {
+  "id": "MM40",
+  "aType": "open",
+  "prompt": "Peak และ plateau สูงขึ้นทันที + hypotension + เสียงหายใจข้างขวาหายไป ต้องนึกถึงภาวะอะไร?",
+  "answer": "Tension pneumothorax",
+  "criteria": "บอก tension pneumothorax",
+  "accepted": "tension pneumothorax, pneumothorax, ปอดรั่ว, tension PTX, PTX",
+  "reveal": "Pressure สูง + hypotension + เสียงหายใจหาย = tension pneumothorax",
+  "pearl": "Needle decompression ทันที ไม่รอ CXR",
+  "options": [
+   "",
+   "",
+   "",
+   ""
+  ],
+  "correct": "",
+  "aPrompt": ""
+ }
+]

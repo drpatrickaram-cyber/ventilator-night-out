@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#0E2236">
+<title>ปุ่มกด · The Ventilator Games</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="css/app.css">
+<style>
+  body { background: var(--navy); color: var(--white); height: 100dvh; overflow: hidden; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+  #app { height: 100dvh; display: flex; flex-direction: column; padding: 16px; gap: 12px; }
+  .bz-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .bz-team { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .bz-wrap { flex: 1; display: grid; place-items: center; }
+  .bz { width: min(78vw, 62vh); height: min(78vw, 62vh); border-radius: 50%; border: 10px solid rgba(255,255,255,.25); font-size: clamp(34px, 9vw, 64px); font-weight: 700; color: var(--white); background: #34495E; cursor: pointer; box-shadow: 0 16px 0 rgba(0,0,0,.35); transition: transform .05s; -webkit-tap-highlight-color: transparent; }
+  .bz:active { transform: translateY(8px); box-shadow: 0 8px 0 rgba(0,0,0,.35); }
+  .bz.go { background: var(--green); animation: glow .8s ease-in-out infinite; }
+  .bz.won { background: var(--amber); color: var(--navy); }
+  .bz.lost { background: #2A3B4D; color: #8496A9; }
+  @keyframes glow { 50% { box-shadow: 0 16px 0 rgba(0,0,0,.35), 0 0 60px rgba(43,182,115,.8); } }
+  .bz-msg { text-align: center; font-size: 22px; min-height: 2em; }
+  .pick { display: flex; flex-direction: column; gap: 14px; margin: auto; width: min(420px, 100%); }
+  .pick button { min-height: 72px; font-size: 24px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="module" src="js/buzzer.js"></script>
+</body>
+</html>

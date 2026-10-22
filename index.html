@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0E2236">
+<title>Ventilator Night Out · ร่วมเล่น</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="css/app.css">
+<style>
+  body { background: var(--navy); color: var(--white); min-height: 100dvh; }
+  #app { max-width: 520px; margin: 0 auto; padding: 16px 16px 40px; display: flex; flex-direction: column; gap: 16px; min-height: 100dvh; }
+  .a-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .a-top .who { font-size: 14px; color: #A9B8C8; text-align: right; }
+  .a-card { background: var(--white); color: var(--ink); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .a-card.dim { background: var(--navy-2); color: var(--white); }
+  .a-card h1 { font-size: 26px; color: var(--navy); }
+  .a-card.dim h1 { color: var(--white); }
+  .a-hero { padding: 8px 0; }
+  .a-hero h1 { font-size: 32px; line-height: 1.15; }
+  .a-q { font-size: 20px; font-weight: 600; line-height: 1.45; }
+  .opt-btn { min-height: 64px; font-size: 18px; justify-content: flex-start; text-align: left; gap: 14px; padding: 12px 16px; }
+  .opt-btn b { width: 36px; height: 36px; border-radius: 50%; background: var(--navy); color: var(--amber); display: inline-grid; place-items: center; flex-shrink: 0; }
+  .opt-btn.mine { background: var(--amber); border-color: var(--amber); }
+  .opt-btn.right { background: var(--green); border-color: var(--green); color: var(--white); }
+  .a-timer { font-size: 15px; font-weight: 700; padding: 4px 12px; border-radius: 999px; background: var(--panel); color: var(--navy); }
+  .a-timer.low { background: #FDE2E3; color: #B3262E; }
+  .chip-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .chip { font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 999px; background: var(--coral); color: var(--white); }
+  .chip.pts { background: var(--amber); color: var(--navy); }
+  .ok-box { background: #E6F7EE; color: #17643F; border-radius: 12px; padding: 12px 14px; font-weight: 600; }
+  .no-box { background: #FDECEC; color: #9E2A2F; border-radius: 12px; padding: 12px 14px; font-weight: 600; }
+  .win-box { background: var(--amber); color: var(--navy); border-radius: 14px; padding: 14px 16px; font-weight: 700; }
+  .wait { text-align: center; padding: 28px 20px; }
+  .wait .big { font-size: 22px; font-weight: 700; }
+  .member { background: var(--navy-2); color: var(--white); border-radius: 20px; padding: 26px 22px; text-align: center; display: flex; flex-direction: column; gap: 6px; border: 2px solid var(--violet); }
+  .member .no { font-size: 64px; font-weight: 700; color: var(--amber); line-height: 1.1; }
+  .member .nm { font-size: 24px; font-weight: 700; }
+  .sheet { position: fixed; inset: 0; background: rgba(8,24,42,.92); z-index: 60; overflow-y: auto; padding: 16px; }
+  .sheet > .a-card { max-width: 520px; margin: 24px auto; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .opt-btn.mine:disabled, .opt-btn.right:disabled { opacity: 1; }
+  .a-card .muted { color: var(--slate); }
+  .a-card.dim .muted, .a-hero .muted, .a-top .muted { color: #B9C7D6; }
+  .err { color: #B3262E; font-size: 14px; min-height: 1.2em; }
+</style>
+</head>
+<body>
+<main id="app" aria-live="polite"></main>
+<script type="module" src="js/audience.js"></script>
+</body>
+</html>

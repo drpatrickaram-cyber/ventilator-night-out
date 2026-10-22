@@ -1,0 +1,68 @@
+rules_version = '2';
+// Ventilator Night Out — Firestore security rules
+// Staff (screen, GM, judge, admin, team buzzers) unlock with the 6-digit PIN stored in config/secret.
+service cloud.firestore {
+  match /databases/{db}/documents {
+    function signedIn() { return request.auth != null; }
+    function isStaff() { return signedIn() && exists(/databases/$(db)/documents/staff/$(request.auth.uid)); }
+    function game() { return get(/databases/$(db)/documents/state/game).data; }
+    function signupOpen() { return get(/databases/$(db)/documents/state/signup).data.open == true; }
+    function str(v, max) { return v is string && v.size() > 0 && v.size() <= max; }
+
+    match /config/{doc} { allow read, write: if false; }
+
+    match /staff/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.pin == get(/databases/$(db)/documents/config/secret).data.pin;
+    }
+
+    match /clock/{uid} { allow read, write: if signedIn() && request.auth.uid == uid; }
+
+    match /state/{doc} { allow read: if true; allow write: if isStaff(); }
+    match /pub/{doc} { allow read: if true; allow write: if isStaff(); }
+    match /questions/{id} { allow read, write: if isStaff(); }
+    match /qimages/{id} { allow read, write: if isStaff(); }
+    match /buzz/{id} { allow read, create, delete: if isStaff(); }
+
+    match /players/{uid} {
+      allow read: if isStaff() || (signedIn() && request.auth.uid == uid);
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && str(request.resource.data.name, 60) && str(request.resource.data.inst, 80);
+      allow delete: if isStaff();
+    }
+
+    match /answers/{id} {
+      allow read: if isStaff() || (signedIn() && id.matches('^.+_' + request.auth.uid + '$'));
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && id == request.resource.data.qid + '_' + request.auth.uid
+        && request.resource.data.at == request.time
+        && game().ansOpen == true
+        && game().qid == request.resource.data.qid
+        && request.time < game().qOpenedAt + duration.value(game().ansSecs + 2, 's')
+        && request.resource.data.get('text', '') is string
+        && request.resource.data.get('text', '').size() <= 80;
+      allow delete: if isStaff();
+    }
+
+    match /members/{key} {
+      allow read, delete: if isStaff();
+      allow create: if signedIn() && signupOpen()
+        && request.resource.data.uid == request.auth.uid
+        && str(request.resource.data.name, 60) && str(request.resource.data.inst, 80)
+        && str(request.resource.data.email, 120) && str(request.resource.data.pos, 30)
+        && request.resource.data.at == request.time;
+    }
+
+    match /wall/{key} {
+      allow read: if true;
+      allow create: if signedIn() && signupOpen()
+        && existsAfter(/databases/$(db)/documents/members/$(key))
+        && request.resource.data.keys().hasOnly(['name', 'inst', 'at'])
+        && str(request.resource.data.name, 60) && str(request.resource.data.inst, 80)
+        && request.resource.data.at == request.time;
+      allow delete: if isStaff();
+    }
+  }
+}
