@@ -15,12 +15,24 @@ const TRACE = '<svg class="p-trace" viewBox="0 0 320 64" preserveAspectRatio="no
 const lsKey = () => `vq-ans-${db.uid}-${session || "0"}`;
 function loadLocal() { try { mine = JSON.parse(localStorage.getItem(lsKey()) || "{}"); } catch (e) { mine = {}; } }
 function saveLocal() { try { localStorage.setItem(lsKey(), JSON.stringify(mine)); } catch (e) { /* private mode */ } }
+// name + institution kept on the phone: prefills the form and lets a returning player skip the blank screen
+function getSaved() { try { return JSON.parse(localStorage.getItem("vq-me") || "null"); } catch (e) { return null; } }
+function setSaved(v) { try { localStorage.setItem("vq-me", JSON.stringify(v)); } catch (e) { /* private mode */ } }
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+/** run fn(); if it is still pending after ms, call onSlow (the write keeps going in the background) */
+function watchSlow(promise, ms, onSlow) { const t = setTimeout(onSlow, ms); return promise.finally(() => clearTimeout(t)); }
 
-const myRank = () => (board?.ranks?.[db.uid] ? { score: board.ranks[db.uid][0], rank: board.ranks[db.uid][1], last: board.ranks[db.uid][2], correct: board.ranks[db.uid][3] } : null);
+const myRank = () => (db && board?.ranks?.[db.uid] ? { score: board.ranks[db.uid][0], rank: board.ranks[db.uid][1], last: board.ranks[db.uid][2], correct: board.ranks[db.uid][3] } : null);
 
+let dbReady;
 boot();
 async function boot() {
-  try { db = await initDB(); } catch (e) { mount(app, h("p", { class: "p-loading" }, "เชื่อมต่อไม่ได้ ลองรีเฟรชหน้านี้")); return; }
+  // Show something useful immediately — connecting can take several seconds on venue Wi-Fi.
+  const saved = getSaved();
+  if (saved?.joined) mount(app, h("section", { class: "p-wait" }, h("p", { class: "p-kicker" }, `สวัสดี ${saved.name}`), h("h1", { class: "p-title" }, "กำลังเชื่อมต่อ…")));
+  else { viewKey = "join"; mount(app, joinView()); }
+  dbReady = connect();
+  db = await dbReady;
   db.onDoc(P.config, (d) => { config = d || {}; render(); });
   db.onDoc(P.pub, (d) => { pub = d; render(); });
   db.onDoc(P.board, (d) => { board = d; render(); });
@@ -29,13 +41,29 @@ async function boot() {
     const s = d?.session || "0";
     if (s !== session) {
       session = s; loadLocal(); checked.clear();
-      me = await db.get(`${P.players}/${db.uid}`).catch(() => null);
+      me = await fetchMe();
       ready = true;
     }
     render();
   });
   keepAwake();
   tick();
+}
+async function connect() {
+  for (let i = 0; ; i++) {
+    try { return await initDB(); } catch (e) {
+      console.warn("connect", e);
+      if (i === 2 && !document.getElementById("nm")) mount(app, h("p", { class: "p-loading" }, "สัญญาณอ่อน กำลังลองเชื่อมต่อใหม่…"));
+      await sleep(Math.min(1500 * (i + 1), 6000));
+    }
+  }
+}
+async function fetchMe() {
+  for (let i = 0; i < 4; i++) {
+    try { return await db.get(`${P.players}/${db.uid}`); } catch (e) { await sleep(800 * (i + 1)); }
+  }
+  const saved = getSaved(); // offline: trust the phone's record rather than bouncing the player back to the form
+  return saved?.joined ? { name: saved.name, inst: saved.inst } : null;
 }
 
 function render() {
@@ -71,21 +99,36 @@ async function lookupMine(qid) {
 
 // ---------------------------------------------------------------- views
 function joinView() {
+  const saved = getSaved() || {};
   const err = h("p", { class: "p-err", role: "alert" });
-  const name = h("input", { id: "nm", class: "p-input", maxlength: "60", autocomplete: "name", placeholder: "เช่น นพ.สมชาย ใจดี", required: true });
-  const inst = h("input", { id: "inst", class: "p-input", maxlength: "80", autocomplete: "organization", placeholder: "เช่น รพ.พระมงกุฎเกล้า", required: true });
+  const name = h("input", { id: "nm", class: "p-input", maxlength: "60", autocomplete: "name", enterkeyhint: "next", placeholder: "เช่น นพ.สมชาย ใจดี", required: true, value: saved.name || "" });
+  const inst = h("input", { id: "inst", class: "p-input", maxlength: "80", autocomplete: "organization", enterkeyhint: "go", placeholder: "เช่น รพ.พระมงกุฎเกล้า", required: true, value: saved.inst || "" });
   const btn = h("button", { type: "submit", class: "p-btn" }, "เข้าร่วม");
+  const draft = () => setSaved({ name: name.value, inst: inst.value, joined: false });
+  name.addEventListener("input", () => { draft(); name.removeAttribute("aria-invalid"); err.textContent = ""; });
+  inst.addEventListener("input", () => { draft(); inst.removeAttribute("aria-invalid"); err.textContent = ""; });
+  // "Next" on the phone keyboard moves to the institution field instead of submitting a half-filled form
+  name.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); inst.focus(); } });
+  const reset = () => { btn.disabled = false; btn.removeAttribute("aria-busy"); btn.textContent = "เข้าร่วม"; };
   const submit = async (e) => {
     e.preventDefault();
+    if (btn.disabled) return;
     const n = name.value.trim(), i = inst.value.trim();
     name.setAttribute("aria-invalid", String(!n)); inst.setAttribute("aria-invalid", String(!i));
-    if (!n || !i) { err.textContent = "กรุณากรอกชื่อและสถาบัน"; (n ? inst : name).focus(); return; }
-    btn.disabled = true; btn.setAttribute("aria-busy", "true"); btn.textContent = "กำลังเข้าร่วม…";
+    if (!n || !i) { err.textContent = !n ? "กรุณากรอกชื่อ-สกุล" : "กรุณากรอกสถาบัน"; (n ? inst : name).focus(); return; }
+    name.removeAttribute("aria-invalid"); inst.removeAttribute("aria-invalid");
+    btn.disabled = true; btn.setAttribute("aria-busy", "true"); btn.textContent = "กำลังเข้าร่วม…"; err.textContent = "";
     try {
-      await db.set(`${P.players}/${db.uid}`, { name: n, inst: i, at: db.TS });
-      me = { name: n, inst: i }; viewKey = ""; render();
+      if (!db) { err.textContent = "กำลังเชื่อมต่อ… รอสักครู่"; db = await dbReady; err.textContent = ""; }
+      await watchSlow(db.set(`${P.players}/${db.uid}`, { name: n, inst: i, at: db.TS }), 8000,
+        () => { err.textContent = "สัญญาณอ่อน กำลังส่งต่อให้… ไม่ต้องกดซ้ำ"; });
+      setSaved({ name: n, inst: i, joined: true });
+      me = { name: n, inst: i };
+      if (ready) { viewKey = ""; render(); }
+      else mount(app, h("section", { class: "p-wait" }, h("p", { class: "p-kicker" }, `สวัสดี ${n}`), h("h1", { class: "p-title" }, "กำลังเชื่อมต่อ…")));
     } catch (x) {
-      err.textContent = "เข้าร่วมไม่สำเร็จ ลองอีกครั้ง"; btn.disabled = false; btn.removeAttribute("aria-busy"); btn.textContent = "เข้าร่วม";
+      console.warn("join", x);
+      err.textContent = "เข้าร่วมไม่สำเร็จ ตรวจสัญญาณแล้วกดอีกครั้ง"; reset();
     }
   };
   return h("form", { class: "p-form p-pop", onsubmit: submit, novalidate: true },
@@ -149,7 +192,8 @@ function questionView() {
     if (remainingMs(state, db.now()) <= 0) { err.textContent = "หมดเวลาแล้ว"; return; }
     btn.disabled = true; input.readOnly = true; btn.setAttribute("aria-busy", "true"); btn.textContent = "กำลังส่ง…";
     try {
-      await db.create(`${P.answers}/${qid}_${db.uid}`, { qid, uid: db.uid, text, at: db.TS });
+      await watchSlow(db.create(`${P.answers}/${qid}_${db.uid}`, { qid, uid: db.uid, text, at: db.TS }), 5000,
+        () => { err.textContent = "สัญญาณอ่อน กำลังส่ง… ไม่ต้องกดซ้ำ"; });
       const saved = await db.get(`${P.answers}/${qid}_${db.uid}`).catch(() => null);
       mine[qid] = { text, ms: saved ? Math.max(0, saved.at - state.openedAt) : null };
       saveLocal(); render();

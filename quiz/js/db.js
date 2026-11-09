@@ -13,10 +13,13 @@ export async function initDB() {
   if (api) return api;
   const dev = new URLSearchParams(location.search).has("dev") || sessionStorage.getItem("vno-dev") === "1";
   if (dev) sessionStorage.setItem("vno-dev", "1");
-  api = dev ? await devBackend() : await firebaseBackend();
-  api.TS = TS; api.inc = inc; api.DEL = DEL;
-  api.offset = await measureOffset(api);
-  api.now = () => Date.now() + api.offset;
+  const a = dev ? await devBackend() : await firebaseBackend();
+  a.TS = TS; a.inc = inc; a.DEL = DEL;
+  // clock sync runs in the background so pages can show UI right away (answers use server time anyway)
+  a.offset = 0;
+  a.now = () => Date.now() + a.offset;
+  a.clockReady = measureOffset(a).then((o) => { a.offset = o; });
+  api = a;
   return api;
 }
 
@@ -55,11 +58,14 @@ function resilient(listen, fetchServer, cb) {
 }
 
 // ---------------------------------------------------------------- Firebase
+let fb = null; // app/auth/firestore survive a failed sign-in so initDB() can be retried
 async function firebaseBackend() {
   const F = await import("./vendor/firebase.js");
-  const app = F.initializeApp(FIREBASE_CONFIG);
-  const auth = F.getAuth(app);
-  const fs = F.initializeFirestore(app, { localCache: F.memoryLocalCache() });
+  if (!fb) {
+    const app = F.initializeApp(FIREBASE_CONFIG);
+    fb = { auth: F.getAuth(app), fs: F.initializeFirestore(app, { localCache: F.memoryLocalCache() }) };
+  }
+  const { auth, fs } = fb;
   const uid = await new Promise((resolve, reject) => {
     const off = F.onAuthStateChanged(auth, (u) => {
       if (u) { off(); resolve(u.uid); }
