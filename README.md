@@ -13,6 +13,7 @@ Web app สำหรับงานเปิดตัว TSCCM Mechanical Ventil
 | `judge.html` | กรรมการตัดสินคำตอบผู้ชม | ✓ |
 | `buzzer.html?team=t1` (t2, t3) | ปุ่มกดของแต่ละทีม | ✓ |
 | `admin.html` | ตั้งชื่อทีม ใส่โจทย์ เปิดฟอร์ม export | ✓ |
+| `quiz/` | Audience Quiz แยกต่างหาก: ผู้ชมพิมพ์ตอบ รวมคะแนนแบบ Kahoot (ดู `quiz/README.md`) | host ✓ |
 
 ## ตั้งค่าครั้งแรก
 

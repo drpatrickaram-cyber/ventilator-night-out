@@ -1,0 +1,11 @@
+{
+  "name": "audience-quiz",
+  "private": true,
+  "description": "Ventilator Night Out audience quiz (local dev tools only; the site itself is static)",
+  "scripts": {
+    "dev": "node tools/devserver.js . 8790"
+  },
+  "devDependencies": {
+    "ws": "^8.18.0"
+  }
+}

@@ -55,6 +55,39 @@ service cloud.firestore {
         && request.resource.data.at == request.time;
     }
 
+    // ---------------- Audience Quiz (q_* collections) ----------------
+    function quiz() { return get(/databases/$(db)/documents/q_state/live).data; }
+
+    match /q_state/{doc} { allow read: if true; allow write: if isStaff(); }
+    match /q_pub/{doc} { allow read: if true; allow write: if isStaff(); }
+    match /q_board/{doc} { allow read: if true; allow write: if isStaff(); }
+    match /q_bank/{id} { allow read, write: if isStaff(); }
+    match /q_bankimg/{id} { allow read, write: if isStaff(); }
+    match /q_results/{id} { allow read, write: if isStaff(); }
+
+    match /q_players/{uid} {
+      allow read: if isStaff() || (signedIn() && request.auth.uid == uid);
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['name', 'inst', 'at'])
+        && str(request.resource.data.name, 60) && str(request.resource.data.inst, 80);
+      allow delete: if isStaff();
+    }
+
+    match /q_answers/{id} {
+      allow read: if isStaff() || (signedIn() && resource.data.uid == request.auth.uid);
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['qid', 'uid', 'text', 'at'])
+        && request.resource.data.uid == request.auth.uid
+        && id == request.resource.data.qid + '_' + request.auth.uid
+        && request.resource.data.at == request.time
+        && str(request.resource.data.text, 120)
+        && exists(/databases/$(db)/documents/q_players/$(request.auth.uid))
+        && quiz().phase == 'question'
+        && quiz().qid == request.resource.data.qid
+        && request.time < quiz().openedAt + duration.value(quiz().secs + 2, 's');
+      allow delete: if isStaff();
+    }
+
     match /wall/{key} {
       allow read: if true;
       allow create: if signedIn() && signupOpen()

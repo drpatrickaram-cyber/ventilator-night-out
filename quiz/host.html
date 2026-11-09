@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Host · Audience Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/host.css">
+</head>
+<body>
+<header class="hd">
+  <div class="hd-title"><strong>Audience Quiz</strong><span>Host</span></div>
+  <nav class="tabs" role="tablist" aria-label="เมนู">
+    <button role="tab" id="tab-live" aria-controls="pane-live" aria-selected="true">ควบคุมเกม</button>
+    <button role="tab" id="tab-bank" aria-controls="pane-bank" aria-selected="false">คลังโจทย์</button>
+    <button role="tab" id="tab-results" aria-controls="pane-results" aria-selected="false">ผลคะแนน</button>
+    <button role="tab" id="tab-settings" aria-controls="pane-settings" aria-selected="false">ตั้งค่า</button>
+  </nav>
+  <div class="hd-links" id="hd-links"></div>
+</header>
+<main>
+  <section id="pane-live" role="tabpanel" aria-labelledby="tab-live" class="pane"></section>
+  <section id="pane-bank" role="tabpanel" aria-labelledby="tab-bank" class="pane" hidden></section>
+  <section id="pane-results" role="tabpanel" aria-labelledby="tab-results" class="pane" hidden></section>
+  <section id="pane-settings" role="tabpanel" aria-labelledby="tab-settings" class="pane" hidden></section>
+</main>
+<script type="module" src="js/host.js"></script>
+</body>
+</html>
